@@ -3,11 +3,14 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native'; // <-- isto
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
+
 
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('')
     const navigation = useNavigation(); // <-- isto
 
     const handleLogin = () => {
@@ -22,9 +25,14 @@ const LoginScreen = () => {
 
     const handleSignUp = () => {
         createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
+        .then(async userCredentials => {
             const user = userCredentials.user;
-            console.log('Registered with:', user.email);
+
+            await updateProfile(user, {
+                displayName: username, // Atualiza o nome de utilizador
+            });
+
+            console.log('Registered with:', user.email, 'and username:', username);
             navigation.replace('Home');  // Navega para Home após registo
         })
         .catch(error => alert(error.message));
@@ -36,6 +44,13 @@ const LoginScreen = () => {
         behavior="padding"
     >
         <View style={styles.inputContainer}>
+            <TextInput
+                placeholder='Username'
+                value={username}
+                onChangeText={text => setUsername(text)}
+                style={styles.input}
+            />
+
             <TextInput
                 placeholder='Email'
                 value={email}
