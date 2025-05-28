@@ -7,7 +7,7 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import SignUpScreen from './screens/SignUpScreen';
-import AuthLoadingScreen from './screens/AuthLoadingScreen';
+import SplashScreen from './screens/SplashScreen';
 
 
 
@@ -18,7 +18,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen options={{ headerShown: false}} name="AuthLoading" component={AuthLoadingScreen} />
+        <Stack.Screen options={{ headerShown: false}} name="SplashScreen" component={SplashScreen} />
         <Stack.Screen options={{ headerShown: false}} name="Welcome" component={WelcomeScreen} />
         <Stack.Screen options={{ headerShown: false}} name="Login" component={LoginScreen} />
         <Stack.Screen options={{ headerShown: false}} name="SignUp" component={SignUpScreen} />
