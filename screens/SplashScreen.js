@@ -10,7 +10,7 @@ const SplashScreen = () => {
     const timer = setTimeout(() => {
       const user = auth.currentUser;
       if (user) {
-        navigation.replace('Home');
+        navigation.replace('Main');
       } else {
         navigation.replace('Welcome');
       }

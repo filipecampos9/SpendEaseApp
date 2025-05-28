@@ -33,7 +33,7 @@ const SignUpScreen = () => {
             });
 
             console.log('Registered with:', user.email, 'and username:', username);
-            navigation.replace('Home');  // Navega para Home após registo
+            navigation.replace('Main');
         })
         .catch(error => alert(error.message));
     };
