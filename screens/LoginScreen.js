@@ -6,6 +6,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { LinearGradient } from 'expo-linear-gradient';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from 'react';
+
+
 
 
 
@@ -14,14 +18,15 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('')
     const navigation = useNavigation(); 
 
-    useState(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                navigation.replace('Home');
-            }
-        })
-        return unsubscribe;
-    }, [])
+    useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user) {
+            navigation.replace('Home');
+        }
+    });
+
+    return unsubscribe;
+    }, []);
 
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)
