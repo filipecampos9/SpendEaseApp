@@ -12,29 +12,42 @@ const HomeScreen = () => {
 
   const handleSignOut = () => {
     signOut(auth).then(() => {
-      navigation.replace("Login");
+      navigation.replace("Welcome"); 
     }).catch(error => alert(error.message));
   };
 
 
 
   return (
-    <View>
-      <View>
-        <Text>Home Screen</Text>
-      </View>
-      <View>
+    <View style={ styles.container }>
+        <Text>Email: {auth.currentUser?.email}</Text>
         <TouchableOpacity
           onPress={handleSignOut}
           style={styles.button}
         >
           <Text style={styles.buttonText}>Sign Out</Text>
         </TouchableOpacity>
-      </View>
     </View>
   )
 }
 
 export default HomeScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+  },
+})

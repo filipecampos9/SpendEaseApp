@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { useNavigation } from '@react-navigation/native'; // <-- isto
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -12,8 +12,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const LoginScreen = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [username, setUsername] = useState('')
-    const navigation = useNavigation(); // <-- isto
+    const navigation = useNavigation(); 
+
+    useState(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.replace('Home');
+            }
+        })
+        return unsubscribe;
+    }, [])
 
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)
