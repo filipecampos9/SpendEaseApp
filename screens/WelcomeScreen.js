@@ -22,9 +22,9 @@ const WelcomeScreen = ({ navigation }) => {
 
         <Text style={styles.title}>Smarter Spending {'\n'} Starts Here</Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.signupButtonWrapper}>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.signupButtonWrapper}>
             <LinearGradient
-                colors={['#0E3452', '#1C5888']} // muda as cores como quiseres
+                colors={['#0E3452', '#1C5888']}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
                 style={styles.signupButton}
@@ -35,7 +35,7 @@ const WelcomeScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.buttonOutline}
-          onPress={() => navigation.navigate('Signup')}
+          onPress={() => navigation.navigate('Login')}
         >
           <Text style={styles.buttonOutlineText}>Login</Text>
         </TouchableOpacity>
