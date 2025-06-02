@@ -45,7 +45,8 @@ const Tabs = () => {
         },
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ 
+      <Tab.Screen name="Home" component={HomeScreen} options={{
+        headerShown: false,
         tabBarIcon: ({ focused }) => 
           <View style={styles.container}>
             <Image
@@ -133,6 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
   },
 });
 

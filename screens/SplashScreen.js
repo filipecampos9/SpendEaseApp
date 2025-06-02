@@ -14,7 +14,7 @@ const SplashScreen = () => {
       } else {
         navigation.replace('Welcome');
       }
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer); // limpa o timer se o componente desmontar antes dos 3s
   }, []);
