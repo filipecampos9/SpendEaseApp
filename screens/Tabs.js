@@ -73,6 +73,7 @@ const Tabs = () => {
           </View>
       }} />
       <Tab.Screen name="AddTransaction" component={AddTransactionScreen} options={{ 
+        headerShown: false,
         tabBarIcon: ({ focused }) => (
             <Image
               source={require('../assets/icons/plus-hexagon.png')}

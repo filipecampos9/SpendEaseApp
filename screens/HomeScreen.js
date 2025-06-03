@@ -1,7 +1,9 @@
 import { StyleSheet, ImageBackground, Text, View, TouchableOpacity, Image, FlatList, SafeAreaView, Platform, StatusBar } from 'react-native'
-import React, { useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
+import { db, auth } from '../firebase';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const defaultUserImage = require('../assets/default-user.jpg');
@@ -9,19 +11,59 @@ const defaultUserImage = require('../assets/default-user.jpg');
 const HomeScreen = () => {
       const navigation = useNavigation();
 
-      const totalBalance = 1000;
-      const income = 500;
-      const expense = 300;
+      const [transactions, setTransactions] = useState([]);
 
-      const transactions = useMemo(() => [
-        { id: '1', title: 'Salary', amount: +1200, date: '2025-10-01' },
-        { id: '2', title: 'Groceries', amount: -300, date: '2025-10-02' },
-        { id: '3', title: 'Diesel', amount: -50, date: '2025-10-03' },
-        { id: '4', title: 'Diesel', amount: -50, date: '2025-10-03' },
-        { id: '5', title: 'Diesel', amount: -50, date: '2025-10-03' },
-        { id: '6', title: 'Diesel', amount: -50, date: '2025-10-03' },
-      ], []);
+      const { income, expense, totalBalance } = useMemo(() => {
+        const income = transactions
+          .filter(t => t.tipo === 'Ganho')
+          .reduce((sum, t) => sum + t.valor, 0);
 
+        const expense = transactions
+          .filter(t => t.tipo === 'Despesa')
+          .reduce((sum, t) => sum + t.valor, 0);
+
+        const totalBalance = income - expense;
+
+        return { income, expense, totalBalance };
+      }, [transactions]);
+
+
+      useEffect(() => {
+        if (!auth.currentUser) return;
+
+        const transactionsRef = collection(db, 'users', auth.currentUser.uid, 'transactions');
+
+        const transactionsQuery = query(
+          transactionsRef,
+          orderBy('data', 'desc') // ordena por data de forma decrescente
+        );
+
+        const unsubscribe = onSnapshot(transactionsQuery, (snapshot) => {
+          const transactionsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          setTransactions(transactionsData);
+        }, (error) => {
+          console.error('Erro ao ouvir transações:', error);
+        });
+
+        return () => unsubscribe();
+      }, []);
+
+
+      const formatDate = (timestamp) => {
+        if (!timestamp) return '';
+
+        const date = timestamp.toDate();
+
+        return new Intl.DateTimeFormat('pt-PT', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }).format(date);
+      };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -53,54 +95,54 @@ const HomeScreen = () => {
         {/* Balance Section */}
         <View style={styles.balanceCard}>
           <Text style={styles.totalBalance}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>€ {totalBalance.toFixed(2)}</Text>
+          <Text style={styles.balanceAmount}>{totalBalance.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}</Text>
 
           <View style={styles.incomeExpenseContainer}>
             <View style={[styles.incomeExpenseBox, { alignItems: 'flex-start' }]}>
               <View style={styles.labelRow}>
-                <Ionicons name="arrow-up-circle-outline" size={24} color="white" />
+                <Ionicons name="arrow-down-circle-outline" size={24} color="white" />
                 <Text style={styles.label}>Income</Text>
               </View>
-              <Text style={styles.transactionBalance}>€ {income.toFixed(2)}</Text>
+              <Text style={styles.transactionBalance}>{income.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}</Text>
             </View>
 
             <View style={[styles.incomeExpenseBox, { alignItems: 'flex-end' }]}>
               <View style={styles.labelRow}>
-                <Ionicons name="arrow-down-circle-outline" size={24} color="white" />
+                <Ionicons name="arrow-up-circle-outline" size={24} color="white" />
                 <Text style={styles.label}>Expense</Text>
               </View>
-              <Text style={styles.transactionBalance}>€ {expense.toFixed(2)}</Text>
+              <Text style={styles.transactionBalance}>{expense.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}</Text>
             </View>
           </View>
         </View>
 
         {/* Transactions Section */}
         <View style={styles.transactionList}>
-          <Text style={styles.sectionTitle}>Transações Recentes</Text>
+          <Text style={styles.sectionTitle}>Transactions History</Text>
 
           <FlatList
-            data={transactions}
+            data={transactions.slice(0, 10)}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <View style={styles.transactionItem}>
-                <Text style={styles.transactionTitle}>{item.title}</Text>
+                <View style={styles.transactionLeft}>
+                  <Text style={styles.transactionTitle}>{item.categoria}</Text>
+                  <Text style={styles.transactionDate}>{formatDate(item.data)}</Text>
+                </View>
                 <View style={styles.transactionRight}>
                   <Text style={[
                     styles.transactionAmount,
-                    item.amount < 0 ? styles.expense : styles.income
+                    item.tipo === 'Despesa' ? styles.expense : styles.income
                   ]}>
-                    € {Math.abs(item.amount).toFixed(2)}
+                    {item.tipo === 'Despesa' ? '- ' : '+ '}€ {Math.abs(item.valor).toFixed(2)}
                   </Text>
-                  <Text style={styles.transactionDate}>{item.date}</Text>
                 </View>
               </View>
             )}
             showsVerticalScrollIndicator={false}
           />
         </View>
-        
       </View> 
-
     </SafeAreaView>
   )
 }
@@ -181,12 +223,11 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   totalBalance: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#ffffff',
-    marginBottom: 10,
   },
   balanceAmount: {
-    fontSize: 36,
+    fontSize: 34,
     color: '#ffffff',
     fontWeight: 'bold',
     marginBottom: 20,
@@ -207,7 +248,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   label: {
-    fontSize: 20,
+    fontSize: 16,
     color: '#ffffff',
   },
   transactionBalance: {
@@ -232,7 +273,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 18,
     color: '#000000',
     marginBottom: 10,
     fontWeight: 'bold',
@@ -253,13 +294,17 @@ const styles = StyleSheet.create({
   transactionRight: {
     alignItems: 'flex-end',
   },
+  transactionLeft: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
   transactionAmount: {
     fontSize: 16,
     color: '#000000',
     marginBottom: 5,
   },
   transactionDate: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6c757d',
   },
 })
