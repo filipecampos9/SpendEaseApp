@@ -7,6 +7,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import SplashScreen from './screens/SplashScreen';
 import Tabs from './screens/Tabs';
+import { Provider } from 'react-native-paper';
 
 
 
@@ -15,15 +16,17 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='SplashScreen'>
-        <Stack.Screen options={{ headerShown: false}} name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="Login" component={LoginScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="SignUp" component={SignUpScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="Main" component={Tabs} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='SplashScreen'>
+          <Stack.Screen options={{ headerShown: false}} name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen options={{ headerShown: false}} name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen options={{ headerShown: false}} name="Login" component={LoginScreen} />
+          <Stack.Screen options={{ headerShown: false}} name="SignUp" component={SignUpScreen} />
+          <Stack.Screen options={{ headerShown: false}} name="Main" component={Tabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

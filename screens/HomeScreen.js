@@ -258,12 +258,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   income: {
-    fontSize: 22,
+    fontSize: 20,
     color: '#28a745',
     fontWeight: 'bold',
   },
   expense: {
-    fontSize: 22,
+    fontSize: 20,
     color: '#dc3545',
     fontWeight: 'bold',
   },
