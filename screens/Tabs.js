@@ -103,6 +103,7 @@ const Tabs = () => {
           </View>
       }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ 
+        headerShown: false,
         tabBarIcon: ({ focused }) => 
           <View style={styles.container}>
             <Image
