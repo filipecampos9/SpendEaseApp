@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, ScrollView, Modal, Image, ImageBackground, SafeAreaView, Platform, StatusBar,} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { getAuth, signOut } from 'firebase/auth';
 import { db, auth } from '../firebase';
 
 
@@ -143,9 +144,15 @@ const ProfileScreen = () => {
                     <Text style={{ textAlign: 'center' }}>Não</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => {
-                      setLogoutModalVisible(false);
-                      // lógica de logout aqui
+                    onPress={ async () => {
+                      try {
+                        const auth = getAuth();
+                        await signOut(auth);
+                        setLogoutModalVisible(false);
+                        navigation.navigate('Welcome');
+                      } catch (error) {
+                        console.error("Error signing out: ", error);
+                      }
                     }}
                     style={{
                       flex: 1,

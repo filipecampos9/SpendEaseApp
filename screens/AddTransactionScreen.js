@@ -35,7 +35,7 @@ const AddTransactionScreen = () => {
     const novaTransacao = {
       tipo,
       categoria: categoriaSelecionada,
-      valor: parseFloat(valor),
+      valor: parseFloat(valor.replace(',', '.')), // Converte o valor para número, substituindo vírgula por ponto
       data: Timestamp.fromDate(data), // Converte a data para o formato do Firestore
       userId: auth.currentUser?.uid, // Adiciona o ID do utilizador
     };
@@ -146,7 +146,7 @@ const AddTransactionScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="0.00"
-            keyboardType="numeric"
+            keyboardType="decimal-pad"
             value={valor}
             onChangeText={setValor}
           />
